@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Portfolio</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="mediaqueries.css" />
+</head>
+<body>
+    <nav id="desktop-nav">
+    <div class="logo">Yen Chun Lin</div>
+    <div>
+        <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#contact">Contact</a></li>
+        </ul>
+    </div>
+    </nav>
+    <nav id="hamburger-nav">
+    <div class="logo">Yen Chun Lin</div>
+    <div class="hamburger-menu">
+        <div class="hamburger-icon" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+        </div>
+        <div class="menu-links">
+        <li><a href="#about" onclick="toggleMenu()">About</a></li>
+        <li><a href="#skills" onclick="toggleMenu()">Skills</a></li>
+        <li><a href="#projects" onclick="toggleMenu()">Projects</a></li>
+        <li><a href="#contact" onclick="toggleMenu()">Contact</a></li>
+        </div>
+    </div>
+    </nav>
+    <section id="profile">
+    <div class="section__pic-container">
+        <img src="./770BD27D-AE2C-43A1-AE61-417B00E0836C.jpg" alt="Yen Chun Lin profile picture" />
+    </div>
+    <div class="section__text">
+        <p class="section__text__p1">Hello, I'm</p>
+        <h1 class="title">Yen Chun Lin</h1>
+        <p class="section__text__p2">Data Scientist</p>
+        <p class="section__text__p3">Machine Learning</p>
+        <p class="section__text__p4">Passionate Learner</p>
+        <div class="btn-container">
+        <button
+            class="btn btn-color-2"
+            onclick="window.open('./Yen-Chun-Lin-Resume.pdf')"
+        >
+            Download CV
+        </button>
+        <button class="btn btn-color-1" onclick="location.href='./#contact'">
+            Contact Info
+        </button>
+        </div>
+        <div id="socials-container">
+        <img
+            src="./li.png"
+            alt="My LinkedIn profile"
+            class="icon"
+            onclick="location.href='https://www.linkedin.com/in/yen-chun-lin-880751265/'"
+        />
+        <img
+            src="./git.png"
+            alt="My Github profile"
+            class="icon"
+            onclick="location.href='https://github.com/YCLCarol'"
+        />
+        </div>
+    </div>
+    </section>
+    <section id="about">
+    <p class="section__text__p1">Get To Know More</p>
+    <h1 class="title">About Me</h1>
+    <div class="section-container">
+        <div class="section__pic-container">
+        <img
+            src="./6015F5EC-4504-4863-BA8F-F5A9B7061DFA.jpg"
+            alt="Profile picture"
+            class="about-pic"
+        />
+        </div>
+        <div class="about-details-container">
+        <div class="about-containers">
+            <div class="details-container">
+            <img
+                src="./American_Eagles_logo.svg.png"
+                alt="Experience icon"
+                class="icon"
+            
+            />
+            <h3>Education</h3>
+            <p>M.Sc. Masters Degree Data Science American University Washington DC<br />B.Sc. Bachelors Degree Food Science Tuanghai University Taichung Taiwan</p>
+            </div>
+        </div>
+        <div class="text-container">
+            <p>
+            Recent Data Science graduate with a robust background in statistical analysis, machine learning, and programming. Proficient in Python, R, and SQL, with practical experience in applying advanced analytics and predictive modeling to solve complex, real-world challenges. Skilled in leveraging machine learning techniques, statistical methodologies, and data visualization tools to extract actionable insights and drive data-informed decision-making. Passionate about solving critical problems and contributing to impactful research or business projects in analytical and technology-driven environments.
+            </p>
+        </div>
+        </div>
+    </div>
+    <img
+        src="./aw.jpg"
+        alt="Arrow icon"
+        class="icon arrow"
+        onclick="location.href='./#skills'"
+    />
+    </section>
+    <section id="skills">
+    <p class="section__text__p1">Explore My</p>
+    <h1 class="title">Relevant Skills </h1>
+    <div class="experience-details-container">
+        <div class="about-containers">
+        <div class="details-container">
+            <h2 class="experience-sub-title">Relevant Course</h2>
+            <div class="article-container">
+            <article>
+                <img
+                src="./check.png"
+                alt="Experience icon"
+                class="icon"
+                />
+                <div>
+                <h3>Statistical Methods</h3>
+                </div>
+            </article>
+            <article>
+                <img
+                src="./check.png"
+                alt="Experience icon"
+                class="icon"
+                />
+                <div>
+                <h3>Programming R</h3>
+                </div>
+            </article>
+            <article>
+                <img
+                src="./check.png"
+                alt="Experience icon"
+                class="icon"
+                />
+                <div>
+                <h3>Regression</h3>
+                </div>
+            </article>
+            <article>
+                <img
+                src="./check.png"
+                alt="Experience icon"
+                class="icon"
+                />
+                <div>
+                <h3>Machine Learning</h3>
+                </div>
+            </article>
+            <article>
+                <img
+                src="./check.png"
+                alt="Experience icon"
+                class="icon"
+                />
+                <div>
+                <h3>Database and Big Data</h3>
+                </div>
+            </article>
+            <article>
+                <img
+                src="./check.png"
+                alt="Experience icon"
+                class="icon"
+                />
+                <div>
+                <h3>Business Insights/ Analytics</h3>
+                </div>
+            </article>
+            <article>
+                <img
+                src="./check.png"
+                alt="Experience icon"
+                class="icon"
+                />
+                <div>
+                <h3>Prog Analytics: Python</h3>
+                </div>
+            </article>
+            <article>
+                <img
+                src="./check.png"
+                alt="Experience icon"
+                class="icon"
+                />
+                <div>
+                <h3>Predictive Analytics</h3>
+                </div>
+            </article>
+            </div>
+        </div>
+        <div class="details-container">
+            <h2 class="experience-sub-title">Technical Skills</h2>
+            <div class="article-container">
+            <article>
+                <img
+                src="./R_logo.svg.png"
+                alt="Experience icon"
+                class="icon"
+                />
+                <div>
+                <h3>R</h3>
+                <p>Advanced</p>
+                </div>
+            </article>
+            <article>
+                <img
+                src="./Python-logo-notext.svg.png"
+                alt="Experience icon"
+                class="icon"
+                />
+                <div>
+                <h3>Python</h3>
+                <p>Advanced</p>
+                </div>
+            </article>
+            <article>
+                <img
+                src="./6697e5d70e6b50dbe5bbe3dd_6697e36f9a2e61c3f9a3c850_SQL.jpeg"
+                alt="Experience icon"
+                class="icon"
+                />
+                <div>
+                <h3>SQL</h3>
+                <p>Advanced</p>
+                </div>
+            </article>
+            <article>
+                <img
+                src="./Tableau-Logo-1024x576.png"
+                alt="Experience icon"
+                class="icon"
+                />
+                <div>
+                <h3>Tableau</h3>
+                <p>Advanced</p>
+                </div>
+            </article>
+            <article>
+                <img
+                src="./check.png"
+                alt="Experience icon"
+                class="icon"
+                />
+                <div>
+                <h3>Relational Model</h3>
+                <p>Advanced</p>
+                </div>
+            </article>
+            <article>
+                <img
+                src="./check.png"
+                alt="Experience icon"
+                class="icon"
+                />
+                <div>
+                <h3>ER Model</h3>
+                <p>Advanced</p>
+                </div>
+            </article>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <img
+        src="./aw.jpg"
+        alt="Arrow icon"
+        class="icon arrow"
+        onclick="location.href='./#projects'"
+    />
+    </section>
+    <section id="projects">
+    <p class="section__text__p1">Browse My Recent</p>
+    <h1 class="title">Projects</h1>
+    <div class="experience-details-container">
+        <div class="about-containers">
+        <div class="details-container color-container">
+            <div class="article-container">
+            <img
+                src="./file.png"
+                alt="Project 1"
+                class="project-img"
+            />
+            </div>
+            <h2 class="experience-sub-title project-title">Capstone</h2>
+            <h3>Addressing Fairness Issues in Imbalanced Datasets</h3>
+            <div class="btn-container">
+            <button
+                class="btn btn-color-2 project-btn"
+                onclick="location.href='https://github.com/YCLCarol/YenChunLin_projects/blob/main/Capstone%20-%20Addressing%20Fairness%20Issues%20in%20Imbalance%20Datasets.pdf/'"
+            >
+                Github
+            </button>
+            <button
+                class="btn btn-color-2 project-btn"
+                onclick="location.href='./Capstone.pdf'"
+            >
+                Live Demo
+            </button>
+            </div>
+        </div>
+        <div class="details-container color-container">
+            <div class="article-container">
+            <img
+                src="./file2.jpg"
+                alt="Project 2"
+                class="project-img"
+            />
+            </div>
+            <h2 class="experience-sub-title project-title">Big Data</h2>
+            <h3>Enhancing Sports Performance Through Big Data Analytics</h3>
+            <div class="btn-container">
+            <button
+                class="btn btn-color-2 project-btn"
+                onclick="location.href='https://github.com/YCLCarol/YenChunLin_projects/blob/main/Enhancing%20Sports%20Performance%20and%20Strategy%20-%20Yen%20Chun%20Lin.pdf'"
+            >
+                Github
+            </button>
+            <button
+                class="btn btn-color-2 project-btn"
+                onclick="location.href='./Enhancing Sports Performance and Strategy Through Big Data Analytics.pdf'"
+            >
+                Live Demo
+            </button>
+            </div>
+        </div>
+        <div class="details-container color-container">
+            <div class="article-container">
+            <img
+                src="./file4.webp"
+                alt="Project 3"
+                class="project-img"
+            />
+            </div>
+            <h2 class="experience-sub-title project-title">Business Analytics</h2>
+            <h3>San Francisco Giants Batting Performance Analysis</h3>
+            <div class="btn-container">
+            <button
+                class="btn btn-color-2 project-btn"
+                onclick="location.href='https://github.com/YCLCarol/YenChunLin_projects/blob/main/San%20Francisco%20Giants%20Batting%20Performance%20Analysis%20-%20Yen%20Chun%20Lin%2C%20Amie%20Touray%2C%20Pavan%20Ketankumar%20Patel%2C%20Yangyang%20Li.pdf'"
+            >
+                Github
+            </button>
+            <button
+                class="btn btn-color-2 project-btn"
+                onclick="location.href='./San Francisco Giants Batting Performance Analysis - Yen Chun Lin, Amie Touray, Pavan Ketankumar Patel, Yangyang Li.pdf'"
+            >
+                Live Demo
+            </button>
+            </div>
+        </div>
+        <div class="details-container color-container">
+            <div class="article-container">
+            <img
+                src="./file3.jpg"
+                alt="Project 4"
+                class="project-img"
+            />
+            </div>
+            <h2 class="experience-sub-title project-title">Machine Learning</h2>
+            <h3>Pediatric Appendicitis Analysis in Machine Learning</h3>
+            <div class="btn-container">
+            <button
+                class="btn btn-color-2 project-btn"
+                onclick="location.href='https://github.com/YCLCarol/YenChunLin_projects/blob/main/Pediatric%20Appendicitis-%20Yen%20Chun%20Lin%2C%20Nylah%20Safforld.Rmd'"
+            >
+                Github
+            </button>
+            <button
+                class="btn btn-color-2 project-btn"
+                onclick="location.href='./Pediatric Appendicitis- Yen Chun Lin, Nylah Safforld.pdf'"
+            >
+                Live Demo
+            </button>
+            </div>
+        </div>
+        <div class="details-container color-container">
+            <div class="article-container">
+            <img
+                src="./bank.jpg"
+                alt="Project 5"
+                class="project-img"
+            />
+            </div>
+            <h2 class="experience-sub-title project-title">Python</h2>
+            <h3>Predicting Term Deposit Subscriptions</h3>
+            <div class="btn-container">
+            <button
+                class="btn btn-color-2 project-btn"
+                onclick="location.href='https://github.com/YCLCarol/YenChunLin_projects/blob/main/Predicting%20Term%20Deposit%20Subscription%20Using%20Bank%20Marketing%20Data%20-%20Yen%20Chun%20Lin%20Yen%20Jo%20Lee%2C%20Soyoung%20Yoon%2C%20Shu%20Wen%20Teng.ipynb'"
+            >
+                Github
+            </button>
+            <button
+                class="btn btn-color-2 project-btn"
+                onclick="location.href='./Predicting Term Deposit Subscription Using Bank Marketing Data - Yen Chun Lin Yen Jo Lee, Soyoung Yoon, Shu Wen Teng.ipynb'"
+            >
+                Live Demo
+            </button>
+            </div>
+        </div>
+        <div class="details-container color-container">
+            <div class="article-container">
+            <img
+                src="./14326445924_59ee76c61d_k1-74c1080c63154baca525a04c342f60af.jpg"
+                alt="Project 6"
+                class="project-img"
+            />
+            </div>
+            <h2 class="experience-sub-title project-title">Predictive Analysis</h2>
+            <h3>Seoul Bike Rental, Urban Mobility</h3>
+            <div class="btn-container">
+            <button
+                class="btn btn-color-2 project-btn"
+                onclick="location.href='https://github.com/YCLCarol/YenChunLin_projects/blob/main/Seoul%20Bike%20Rental%2C%20Urban%20Mobility-%20Yen%20Chun%20Lin%2C%20Silvy%20Saint-Jean%2C%20YangYang%20Li.pdf'"
+            >
+                Github
+            </button>
+            <button
+                class="btn btn-color-2 project-btn"
+                onclick="location.href='./Seoul Bike Rental, Urban Mobility- Yen Chun Lin, Silvy Saint-Jean, YangYang Li.qmd'"
+            >
+                Live Demo
+            </button>
+            </div>
+        </div>
+        <div class="details-container color-container">
+            <div class="article-container">
+            <img
+                src="./下載.jfif"
+                alt="Project 7"
+                class="project-img"
+            />
+            </div>
+            <h2 class="experience-sub-title project-title">Shiny App</h2>
+            <h3>US Arrests Data ShinyApp Projects</h3>
+            <div class="btn-container">
+            <button
+                class="btn btn-color-2 project-btn"
+                onclick="location.href='https://github.com/YCLCarol/YenChunLin_projects/blob/main/US%20Arrests%20Data%20ShinyApp%20Project%20-%20Yen-Chun%20Lin%20%26%20Aileen%20McDonald.R'"
+            >
+                Github
+            </button>
+            <button
+                class="btn btn-color-2 project-btn"
+                onclick="location.href='./US Arrests Data ShinyApp Project - Yen-Chun Lin & Aileen McDonald.R'"
+            >
+                Live Demo
+            </button>
+            </div>
+        </div>        
+    </div>
+
+    <img
+        src="./aw.jpg"
+        alt="Arrow icon"
+        class="icon arrow"
+        onclick="location.href='./#contact'"
+    />
+    </section>
+    <section id="contact">
+    <p class="section__text__p1">Get in Touch</p>
+    <h1 class="title">Contact Me</h1>
+    <div class="contact-info-upper-container">
+        <div class="contact-info-container">
+        <img
+            src="./email.jpg"
+            alt="Email icon"
+            class="icon contact-icon email-icon"
+        />
+        <p><a href="mailto:yl5496a@american.edu">yl5496a@american.edu</a></p>
+        </div>
+        <div class="contact-info-container">
+        <img
+            src="./li.png"
+            alt="LinkedIn icon"
+            class="icon contact-icon"
+        />
+        <p><a href="https://www.linkedin.com/in/yen-chun-lin-880751265/">LinkedIn</a></p>
+        </div>
+    </div>
+    </section>
+    <footer>
+    <nav>
+        <div class="nav-links-container">
+        <ul class="nav-links">
+            <li><a href="#about">About</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        </div>
+    </nav>
+    <p>Copyright &#169; 2025 Yen Chun Lin. All Rights Reserved.</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

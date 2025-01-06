@@ -1,0 +1,602 @@
+---
+title: 'Project Deliverable 2 '
+author: "Team 2"
+date: "11/11/2024"
+output: word_document
+format:
+  docx:
+    toc: true
+    toc-depth: 2
+fig-width: 10
+fig-height: 6
+fontsize: 10pt
+code-overflow: wrap
+geometry: left = 2cm, right = 2cm, top = 2cm, bottom = 2cm
+echo: true
+include: true
+warning: false
+message: false
+subtitle: Model Selection
+---
+
+```{r}
+# Load necessary libraries
+library(tidyverse)
+library(corrplot)
+library(lmtest)
+library(olsrr)
+library(pls)
+library(dplyr)
+library(car)
+library(lmtest)
+library("car")
+#install.packages("randomForest")
+library(randomForest)
+```
+
+
+```{r}
+# Load the dataset using read.table with Latin1 encoding
+data <- read.table("SeoulBikeData.csv", 
+                   header = TRUE, 
+                   sep = ",", 
+                   stringsAsFactors = TRUE, 
+                   fileEncoding = "latin1")
+# Rename columns
+data <- data %>%
+  rename(Temperature = Temperature..C., 
+         Humidity = Humidity..., 
+         Wind_speed = Wind.speed..m.s., 
+         Visibility = Visibility..10m., 
+         Dew_point_temperature = Dew.point.temperature..C., 
+         Solar_Radiation = Solar.Radiation..MJ.m2., 
+         Rainfall = Rainfall.mm., 
+         Snowfall = Snowfall..cm., 
+         Functioning_Day = Functioning.Day)
+
+# Check the structure and dispaly of the data
+str(data)
+head(data)
+```
+
+
+```{r}
+## Correlation Matirx
+# Select all numeric columns
+v <- data[, sapply(data, is.numeric)]
+# Calculate the correlation matrix
+v.cor <- cor(v, use = "complete.obs")  # Use "complete.obs" to exclude NA values from correlation calculation
+
+# First correlation plot using numbers (number displays the correlation coefficients)
+corrplot::corrplot(v.cor, method = "number", order = "hclust")
+
+# Second correlation plot using ellipses (ellipse visualizes correlation strength)
+corrplot::corrplot(v.cor, method = "ellipse", order = "hclust")
+```
+
+
+```{r}
+## Descriptive Analytics: Normality
+
+# Set the plot layout to 1 row and 2 columns
+par(mfrow = c(1, 2))
+
+# Display the histogram for the original **outcome variable** (Rented Bike Count)
+hist(data$Rented.Bike.Count, 
+     main = "Rented Bike Count Histogram", 
+     xlab = "Rented Bike Count", 
+     col = "lightblue", 
+     border = "black", 
+     breaks = 30)
+
+# QQ plot for the original outcome variable
+qqnorm(data$Rented.Bike.Count, main = "QQ Plot of Rented Bike Count")
+qqline(data$Rented.Bike.Count, col = "red")
+```
+
+
+```{r}
+# Select numeric columns (independent variables)
+predictors <- data[, sapply(data, is.numeric)]
+
+# Set the graph output to 1 row and 2 columns for each variable
+par(mfrow = c(1, 2))
+
+# Iterate over each predictor to draw the histogram and QQ plot
+for (var_name in colnames(predictors)) {
+  
+  # Histogram for the predictor variable
+  hist(predictors[[var_name]], 
+       main = paste(var_name, "Histogram"), 
+       xlab = var_name, 
+       col = "lightblue", 
+       border = "black", 
+       breaks = 30)
+  
+  # QQ Plot for the predictor variable
+  qqnorm(predictors[[var_name]], main = paste(var_name, "QQ Plot"))
+  qqline(predictors[[var_name]])
+  
+  # If you want to adjust the graph output for large datasets
+  Sys.sleep(0.5)  # Pause for a brief moment for the plots to be visible
+}
+```
+
+
+```{r}
+# Select the variable (Wind_speed) to log-transform
+# Apply log transformation to Wind_speed (add 1 to handle zero values)
+log_wind_speed <- log(data$Wind_speed + 1)
+
+# Set the plot layout to 1 row and 2 columns for the histogram and QQ plot
+par(mfrow = c(1, 2))
+
+# Histogram for log-transformed Wind_speed
+hist(log_wind_speed, 
+     main = "Log of Wind Speed Histogram", 
+     xlab = "Log of Wind Speed", 
+     col = "lightgreen", 
+     border = "black", 
+     breaks = 30)
+
+# QQ Plot for log-transformed Wind_speed
+qqnorm(log_wind_speed, main = "QQ Plot of Log of Wind Speed")
+qqline(log_wind_speed, col = "red")
+```
+
+
+```{r}
+## Descriptive Analytics: Boxplots for Categorical Independent Variables
+par(mfrow = c(1, 3))
+# Boxplot for Rented Bike Count by Seasons
+boxplot(data$Rented.Bike.Count ~ data$Seasons, 
+        ylab = "Rented Bike Count", 
+        xlab = "Seasons", 
+        main = "Rented Bike Count by Seasons")
+
+# Boxplot for Rented Bike Count by Holiday
+boxplot(data$Rented.Bike.Count ~ data$Holiday, 
+        ylab = "Rented Bike Count", 
+        xlab = "Holiday", 
+        main = "Rented Bike Count by Holiday")
+
+# Boxplot for Rented Bike Count by Functioning Day (now renamed as Functioning_Day)
+boxplot(data$Rented.Bike.Count ~ data$Functioning_Day, 
+        ylab = "Rented Bike Count", 
+        xlab = "Functioning Day", 
+        main = "Rented Bike Count by Functioning Day")
+```
+
+
+```{r}
+## Apply OLS regression
+# Apply log transformation to Wind_speed (add 1 to handle zero values)
+data$log_wind_speed <- log(data$Wind_speed + 1)
+
+# Fit the regression model using log_wind_speed
+ols_1 <- lm(Rented.Bike.Count ~  Temperature + Humidity + log_wind_speed + 
+              Visibility + Dew_point_temperature + Solar_Radiation + Rainfall + 
+              Snowfall + Seasons , data = data)
+
+# Display the summary of the model
+summary(ols_1)
+```
+
+
+```{r}
+## multicollinearity diagnostics
+
+# Calculate the Condition Index for ols_1
+c2 <- ols_eigen_cindex(ols_1)
+# Display the first two columns of the Condition Index results
+print(c2[ ,1:2])
+# Calculate and print the square root of the ratio of the largest to smallest eigenvalue
+condition_index_value <- sqrt(c2[1, 1] / c2[nrow(c2), 1])
+print(condition_index_value)
+# Calculate VIF for ols_1
+vif_values <- vif(ols_1)
+print(vif_values)
+```
+
+
+```{r}
+# Remove Dew_point_temperature and Visibility from the model and fit a new regression model
+ols_2 <- lm(Rented.Bike.Count ~ Hour + Temperature + Humidity + log_wind_speed + 
+              Solar_Radiation + Rainfall + Snowfall + 
+              Seasons + Holiday + Functioning_Day, data = data)
+summary(ols_2)
+```
+
+
+```{r}
+# ---- Multicollinearity Diagnostics for OLS_2 ----
+# Calculate the Condition Index for OLS_2
+c2_ols_2 <- ols_eigen_cindex(ols_2)
+print(c2_ols_2[ ,1:2])
+# Calculate the overall Condition Index value
+condition_index_value_ols_2 <- sqrt(c2_ols_2[1, 1] / c2_ols_2[nrow(c2_ols_2), 1])
+print(condition_index_value_ols_2)
+# Calculate VIF for OLS_2
+vif_values_ols_2 <- vif(ols_2)
+print(vif_values_ols_2)
+```
+
+
+```{r}
+# Perform ANOVA to compare the two models
+anova_result <- anova(ols_1, ols_2)
+print(anova_result)
+```
+
+
+```{r}
+# ---- OLS Assumptions Diagnostics for OLS_2 ----
+
+# 1. Linearity Check
+# Plot residuals vs fitted values to check for non-linear patterns
+plot(ols_2$fitted.values, residuals(ols_2), 
+     xlab = "Fitted Values", 
+     ylab = "Residuals", 
+     main = "Residuals vs Fitted Values")
+abline(h = 0, col = "red", lwd = 2)
+
+# 2. Normality of Residuals
+# QQ-plot for residuals
+qqnorm(residuals(ols_2), main = "Normal Q-Q Plot")
+qqline(residuals(ols_2), col = "red", lwd = 2)
+
+# Histogram of residuals
+hist(residuals(ols_2), breaks = 30, 
+     main = "Histogram of Residuals", 
+     xlab = "Residuals", col = "blue")
+
+# 3. Homoskedasticity Check
+# Breusch-Pagan test for constant variance
+library(lmtest)
+bp_test <- bptest(ols_2)
+print(bp_test)
+
+# Plot residuals vs fitted values again for visual confirmation
+plot(ols_2$fitted.values, abs(residuals(ols_2)), 
+     xlab = "Fitted Values", 
+     ylab = "Absolute Residuals", 
+     main = "Residuals vs Fitted Values (Abs)")
+abline(h = 0, col = "red", lwd = 2)
+
+# 4. Multicollinearity Diagnostics
+# Condition Index
+condition_index_ols_2 <- ols_eigen_cindex(ols_2)
+print(condition_index_ols_2[ ,1:2])
+
+# Variance Inflation Factor (VIF)
+vif_ols_2 <- vif(ols_2)
+print(vif_ols_2)
+
+# 5. Independence of Residuals
+# Durbin-Watson test for autocorrelation
+dw_test <- dwtest(ols_2)
+print(dw_test)
+
+# 6. Mean of Residuals = 0
+mean_residuals <- mean(residuals(ols_2))
+print(mean_residuals)
+```
+
+
+```{r}
+## Performe Lagged Outcome Variable in WLS according to assumption test
+# Step 1: Add the lagged outcome variable
+data$Lagged_Rented_Bike_Count <- lag(data$Rented.Bike.Count, 1)  # Lag of 1 period
+# Step 2: Remove rows with NA (due to lagged variable)
+data_clean <- na.omit(data)
+
+ols1_clean<-lm(Rented.Bike.Count ~   Temperature + Humidity + log_wind_speed + 
+    Visibility + Dew_point_temperature + Solar_Radiation + Rainfall + 
+    Snowfall + Seasons , data = data_clean)
+
+
+# Step 3: Refit the OLS model using the cleaned dataset
+ols2_clean <- lm(Rented.Bike.Count ~ Hour + Temperature + Humidity + log_wind_speed + 
+                  Solar_Radiation + Rainfall + Snowfall + Seasons + Holiday + 
+                  Functioning_Day, data = data_clean)
+
+# Step 4: Extract residuals and compute weights
+residuals_ols1_clean <- residuals(ols1_clean)
+weights1_clean <- 1 / (residuals_ols1_clean^2)  # Inverse of squared residuals as weights
+
+residuals_ols2_clean <- residuals(ols2_clean)
+weights2_clean <- 1 / (residuals_ols2_clean^2)
+
+# Step 5: Fit the WLS model with the lagged outcome variable
+wls_lagged_model1 <- lm(Rented.Bike.Count ~Lagged_Rented_Bike_Count + Hour + Temperature + Humidity + log_wind_speed + 
+    Visibility + Dew_point_temperature + Solar_Radiation + Rainfall + 
+    Snowfall + Seasons + Holiday + Functioning_Day, data = data_clean, weights = weights1_clean)
+
+
+
+wls_lagged_model2 <- lm(Rented.Bike.Count ~ Lagged_Rented_Bike_Count + Hour + Temperature + 
+                         Humidity + log_wind_speed + Solar_Radiation + Rainfall + 
+                         Snowfall + Seasons + Holiday + Functioning_Day, 
+                       data = data_clean, weights = weights2_clean)
+
+# Step 6: Summarize the WLS model
+summary(wls_lagged_model1)
+summary(wls_lagged_model2)
+```
+
+
+```{r}
+# Perform Breusch-Pagan test for the WLS model
+bp_test_wls1 <- bptest(wls_lagged_model1)
+
+# Print the results
+print(bp_test_wls1)
+```
+
+
+```{r}
+# Perform Breusch-Pagan test for the WLS model
+bp_test_wls2 <- bptest(wls_lagged_model2)
+
+# Print the results
+print(bp_test_wls2)
+```
+
+
+```{r}
+set.seed(123)
+train_indices <- sample(1:nrow(data_clean), size = 0.7 * nrow(data_clean))
+train_data <- data[train_indices, ]
+test_data <- data[-train_indices, ]
+
+test_predictions1 <- predict(wls_lagged_model1, newdata = test_data)
+
+
+residuals1 <- test_data$Rented.Bike.Count - test_predictions1
+mse1 <- mean(residuals1^2)
+rmse1 <- sqrt(mse1)
+cat("WLS1 Mean Squared Error (MSE):", mse1, "\n")
+cat("WLS1 Root Mean Squared Error (RMSE):", rmse1, "\n")
+
+```
+
+
+```{r}
+set.seed(123)
+train_indices <- sample(1:nrow(data_clean), size = 0.7 * nrow(data_clean))
+train_data <- data[train_indices, ]
+test_data <- data[-train_indices, ]
+
+test_predictions2 <- predict(wls_lagged_model2, newdata = test_data)
+
+
+residuals2 <- test_data$Rented.Bike.Count - test_predictions2
+mse2 <- mean(residuals2^2)
+rmse2 <- sqrt(mse2)
+cat("WLS2 Mean Squared Error (MSE):", mse2, "\n")
+cat("WLS2 Root Mean Squared Error (RMSE):", rmse2, "\n")
+
+```
+
+
+```{r}
+set.seed(123)
+library(glmnet)
+
+x <- model.matrix(Rented.Bike.Count ~  Lagged_Rented_Bike_Count + Temperature + Humidity + log_wind_speed + 
+    Visibility + Dew_point_temperature + Solar_Radiation + Rainfall + 
+    Snowfall + Seasons , data = data_clean)[ , -1]
+y <- data_clean$Rented.Bike.Count
+
+
+
+ridge.logit.cv10 <- cv.glmnet(x, y,alpha = 0,family = "gaussian")
+round(cbind("Lambda" = ridge.logit.cv10$lambda,"10FCV" = ridge.logit.cv10$cvm),digits = 3)
+plot(ridge.logit.cv10)
+
+ridge.best.lambda <- ridge.logit.cv10$lambda.min
+min.cv.ridge <- min(ridge.logit.cv10$cvm)
+round(cbind("Best Lambda" = ridge.best.lambda,"Best Log Lambda" = log(ridge.best.lambda),
+"Best 10FCV" = min.cv.ridge),digits = 3)
+```
+
+
+```{r}
+set.seed(123)
+
+x2 <- model.matrix(Rented.Bike.Count ~ Lagged_Rented_Bike_Count + Hour + Temperature + Humidity + log_wind_speed + 
+    Solar_Radiation + Rainfall + Snowfall + Seasons + Holiday + 
+    Functioning_Day, data = data_clean)[ , -1]
+y2 <- data_clean$Rented.Bike.Count
+
+
+
+ridge.logit2.cv10 <- cv.glmnet(x2, y2,alpha = 0,family = "gaussian")
+round(cbind("Lambda" = ridge.logit2.cv10$lambda,"10FCV" = ridge.logit2.cv10$cvm),digits = 3)
+plot(ridge.logit2.cv10)
+
+ridge.best.lambda2 <- ridge.logit2.cv10$lambda.min
+min.cv.ridge2 <- min(ridge.logit2.cv10$cvm)
+round(cbind("Best Lambda" = ridge.best.lambda2,"Best Log Lambda" = log(ridge.best.lambda2),
+"Best 10FCV" = min.cv.ridge2),digits = 3)
+```
+
+
+```{r}
+library(randomForest)
+
+# Set a seed for reproducibility
+set.seed(123)
+
+random_forest_model <- randomForest(Rented.Bike.Count ~  Lagged_Rented_Bike_Count + Temperature + Humidity + log_wind_speed + Visibility + Dew_point_temperature + Solar_Radiation + Rainfall + Snowfall + Seasons , data = data_clean,importance = TRUE, ntree = 500)
+
+# Make predictions on the test dataset
+predictions <- predict(random_forest_model, newdata = test_data)
+
+# Compute metrics like Mean Squared Error (MSE)
+mse <- mean((test_data$Rented.Bike.Count - predictions)^2)
+cat("Mean Squared Error:", mse, "\n")
+rmse<-sqrt(mse)
+cat("RMSE:", rmse, "\n")
+
+# Display variable importance
+importance(random_forest_model,type = 1)
+varImpPlot(random_forest_model,type = 1)  # Plot variable importance
+```
+
+
+```{r}
+library(randomForest)
+
+# Set a seed for reproducibility
+set.seed(123)
+
+random_forest_model2 <- randomForest(Rented.Bike.Count ~ Lagged_Rented_Bike_Count +Hour + 
+    Temperature + Humidity + log_wind_speed + Solar_Radiation + 
+    Rainfall + Snowfall + Seasons + Holiday + Functioning_Day, 
+    data = data_clean,importance = TRUE, ntree = 500)
+
+# Make predictions on the test dataset
+predictions2 <- predict(random_forest_model2, newdata = test_data)
+
+# Compute metrics like Mean Squared Error (MSE)
+mse2 <- mean((test_data$Rented.Bike.Count - predictions2)^2)
+cat("Mean Squared Error:", mse2, "\n")
+rmse2<-sqrt(mse2)
+cat("RMSE:", rmse2, "\n")
+
+# Display variable importance
+importance(random_forest_model2,type = 1)
+varImpPlot(random_forest_model2,type = 1)  # Plot variable importance
+```
+
+
+```{r}
+lasso.logit <- glmnet(x, y,alpha = 1,  family = "gaussian")
+plot(lasso.logit)
+set.seed(123)
+lasso.logit.cv10 <- cv.glmnet(x, y,alpha = 1,family = "gaussian")
+cbind("Lambda" = lasso.logit.cv10$lambda,"10FCV" = lasso.logit.cv10$cvm)
+plot(lasso.logit.cv10)
+lasso.best.lambda <- lasso.logit.cv10$lambda.min
+min.cv.lasso <- min(lasso.logit.cv10$cvm)
+cbind("Best Lambda" = lasso.best.lambda,"Best Log Lambda" = log(lasso.best.lambda),"Best 10FCV" = min.cv.lasso)
+lasso.coef.best <- coef(lasso.logit, s = lasso.best.lambda)
+lasso.coef.0 <- coef(lasso.logit, s = 0)
+all.coefs <- round(cbind(lasso.coef.best,exp(lasso.coef.best),lasso.coef.0,exp(lasso.coef.0)),digits = 3)
+colnames(all.coefs) <- c("Best LASSO", "Odds", "0-Lambda LASSO", "0dds")
+all.coefs
+```
+
+
+```{r}
+lasso.logit2 <- glmnet(x2, y2,alpha = 1,  family = "gaussian")
+plot(lasso.logit2)
+set.seed(123)
+lasso.logit2.cv10 <- cv.glmnet(x2, y2,alpha = 1,family = "gaussian")
+cbind("Lambda" = lasso.logit2.cv10$lambda,"10FCV" = lasso.logit2.cv10$cvm)
+plot(lasso.logit2.cv10)
+lasso2.best.lambda <- lasso.logit2.cv10$lambda.min
+min.cv.lasso2 <- min(lasso.logit2.cv10$cvm)
+cbind("Best Lambda" = lasso2.best.lambda,"Best Log Lambda" = log(lasso2.best.lambda),"Best 10FCV" = min.cv.lasso2)
+lasso2.coef.best <- coef(lasso.logit2, s = lasso2.best.lambda)
+lasso2.coef.0 <- coef(lasso.logit2, s = 0)
+all.coefs2 <- round(cbind(lasso2.coef.best,exp(lasso2.coef.best),lasso2.coef.0,exp(lasso2.coef.0)),digits = 3)
+colnames(all.coefs2) <- c("Best LASSO", "Odds", "0-Lambda LASSO", "0dds")
+all.coefs2
+```
+
+
+```{r}
+# Example MSE values for three models
+mse_values <- c(221467.6, 189182.8, 74349.45, 72284.64, 8872.253 , 5472.322, 71769.95,69870.89)  # Replace with actual MSE values
+model_names <- c("OLS1 WLS", "OLS2 WLS", "OLS1 Ridge", "OLS2 Ridge", "OLS1 RF", "OLS2 RF", "OLS1 LASSO", "OLS2 LASSO")
+
+# Create a bar plot with rotated model names
+bar_positions <- barplot(
+  mse_values, 
+  names.arg = model_names, 
+  col = c("skyblue", "pink", "skyblue", "pink", "skyblue", "pink", "skyblue", "pink"), 
+  main = "Comparison of MSE among Models", 
+  xlab = "Models", 
+  ylab = "MSE", 
+  ylim = c(0, max(mse_values) + 20000),  # Add some space above the highest bar
+  las = 2,  # Rotate model names to be vertical
+  cex.names = 0.8  # Adjust size of model names
+)
+
+# Add text labels for exact MSE values on the bars
+text(
+  x = bar_positions,  # Use bar_positions for the x-coordinates
+  y = mse_values,     # Use mse_values for the y-coordinates
+  labels = round(mse_values, 1),  # Round MSE values for readability
+  pos = 3,            # Position the text above the bars
+  cex = 0.8,          # Adjust text size
+  col = "black"       # Text color
+)
+
+```
+
+
+```{r}
+# Example coefficients from the best LASSO model
+# Example coefficients
+coefficients <- c(
+  Lagged_Rented_Bike_Count = 0.793,
+  Hour = 4.375,
+  Temperature = 4.861,
+  Humidity = -1.122,
+  log_wind_speed = 27.049,
+  Solar_Radiation = 32.112,
+  Rainfall = -9.261,
+  Snowfall = 3.704,
+  SeasonsSpring = -36.233,
+  SeasonsSummer = -36.755,
+  SeasonsWinter = -68.949,
+  Holiday = 25.313,
+  Functioning_Day = 217.367 
+)
+
+# Convert coefficients to a data frame
+coeff_df <- data.frame(
+  Predictor = names(coefficients),
+  Coefficient = coefficients
+)
+
+# Sort coefficients by magnitude for better visualization
+coeff_df <- coeff_df[order(abs(coeff_df$Coefficient), decreasing = TRUE), ]
+
+# Create a bar plot
+bar_positions <- barplot(
+  coeff_df$Coefficient,
+  names.arg = "",  # Temporarily omit names
+  las = 2,  # Ensure vertical orientation of axis text
+  col = ifelse(coeff_df$Coefficient > 0, "skyblue", "pink"),  # Different colors for positive/negative
+  main = "Coefficients of the Best LASSO Model",
+  xlab = "Predictors",
+  ylab = "Coefficient",
+  cex.names = 0.8  # Adjust size of predictor names
+)
+
+# Add rotated predictor labels manually
+text(
+  x = bar_positions,
+  y = par("usr")[3] - 0.05 * (par("usr")[4] - par("usr")[3]),  # Position below bars
+  labels = coeff_df$Predictor,
+  srt = 45,  # Rotate text by 45 degrees
+  adj = 1,  # Right-align text
+  xpd = TRUE,  # Allow text to go outside plot area
+  cex = 0.8  # Adjust text size
+)
+
+# Add a horizontal line at zero for reference
+abline(h = 0, col = "red", lty = 2)
+
+
+```
+
+
+```{r}
+final.model<-lm(Rented.Bike.Count ~ Temperature + Humidity + log_wind_speed +Visibility + Dew_point_temperature + Solar_Radiation + Rainfall + Snowfall +Seasons, data = data_clean)
+summary(final.model)
+```
