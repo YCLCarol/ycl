@@ -404,7 +404,7 @@ margin: 0 auto;
 
 /* Center the last item (project 7) */
 .details-container:last-child {
-grid-column: 1; /* Place in middle column */
+grid-column: 2; /* Place in middle column */
 }
 
 .details-container {
